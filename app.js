@@ -13,7 +13,6 @@ import express from "express";
 const app = express();
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
-// ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 import config from "./config";
 config(app);
 
@@ -21,12 +20,11 @@ config(app);
 import indexRoutes from "./routes/index.routes";
 app.use("/api", indexRoutes);
 
-import authRoutes from "./routes/auth.routes";
-app.use("/auth", authRoutes);
-
-// ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 import errorHandling from "./error-handling";
 errorHandling(app);
+
+import notFoundHandler from "./middlewares/error-handling";
+notFoundHandler(app)
 
 export default app;
