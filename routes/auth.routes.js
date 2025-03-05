@@ -1,130 +1,90 @@
-import { Router } from "express";
-const router = Router();
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import { isAuthenticated } from "../middlewares/jwt.middleware.js";
 
-// ℹ️ Handles password encryption
-import { genSaltSync, hashSync, compareSync } from "bcrypt";
-
-// ℹ️ Handles password encryption
-import { sign } from "jsonwebtoken";
-
-// Require the User model in order to interact with the database
-import { findOne, create } from "../models/User.model";
-
-// Require necessary (isAuthenticated) middleware in order to control access to specific routes
-import { isAuthenticated } from "../middleware/jwt.middleware.js";
-
-// How many rounds should bcrypt run the salt (default - 10 rounds)
+const router = express.Router();
 const saltRounds = 10;
 
-// POST /auth/signup  - Creates a new user in the database
+// Signup (Create User)
 router.post("/signup", (req, res, next) => {
   const { email, password, name } = req.body;
 
-  // Check if email or password or name are provided as empty strings
-  if (email === "" || password === "" || name === "") {
-    res.status(400).json({ message: "Provide email, password and name" });
-    return;
+  if (!email || !password || !name) {
+    return res.status(400).json({ message: "Provide email, password and name" });
   }
 
-  // This regular expression check that the email is of a valid format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ message: "Provide a valid email address." });
-    return;
+    return res.status(400).json({ message: "Provide a valid email address." });
   }
 
-  // This regular expression checks password for special characters and minimum length
   const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
   if (!passwordRegex.test(password)) {
-    res.status(400).json({
-      message:
-        "Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.",
+    return res.status(400).json({
+      message: "Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.",
     });
-    return;
   }
 
-  // Check the users collection if a user with the same email already exists
-  findOne({ email })
-    .then((foundUser) => {
-      // If the user with the same email already exists, send an error response
-      if (foundUser) {
-        res.status(400).json({ message: "User already exists." });
-        return;
-      }
+  User.findOne({ email })
+    .then(existingUser => {
+      if (existingUser) return res.status(400).json({ message: "User already exists." });
 
-      // If email is unique, proceed to hash the password
-      const salt = genSaltSync(saltRounds);
-      const hashedPassword = hashSync(password, salt);
-
-      // Create the new user in the database
-      // We return a pending promise, which allows us to chain another `then`
-      return create({ email, password: hashedPassword, name });
+      return bcrypt.genSalt(saltRounds);
     })
-    .then((createdUser) => {
-      // Deconstruct the newly created user object to omit the password
-      // We should never expose passwords publicly
-      const { email, name, _id } = createdUser;
-
-      // Create a new object that doesn't expose the password
-      const user = { email, name, _id };
-
-      // Send a json response containing the user object
-      res.status(201).json({ user: user });
+    .then(salt => bcrypt.hash(password, salt))
+    .then(hashedPassword => {
+      return User.create({ email, password: hashedPassword, name });
     })
-    .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
+    .then(createdUser => {
+      res.status(201).json({ _id: createdUser._id, email: createdUser.email, name: createdUser.name });
+    })
+    .catch(error => {
+      console.error("Error while signing up ->", error.message);
+      res.status(500).json({ message: "Internal Server Error" });
+    });
 });
 
-// POST  /auth/login - Verifies email and password and returns a JWT
+// Login
 router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
 
-  // Check if email or password are provided as empty string
-  if (email === "" || password === "") {
-    res.status(400).json({ message: "Provide email and password." });
-    return;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Provide email and password." });
   }
 
-  // Check the users collection if a user with the same email exists
-  findOne({ email })
-    .then((foundUser) => {
-      if (!foundUser) {
-        // If the user is not found, send an error response
-        res.status(401).json({ message: "User not found." });
-        return;
-      }
+  let foundUser;
 
-      // Compare the provided password with the one saved in the database
-      const passwordCorrect = compareSync(password, foundUser.password);
+  User.findOne({ email })
+    .then(user => {
+      if (!user) return Promise.reject({ status: 401, message: "User not found." });
 
-      if (passwordCorrect) {
-        // Deconstruct the user object to omit the password
-        const { _id, email, name } = foundUser;
-
-        // Create an object that will be set as the token payload
-        const payload = { _id, email, name };
-
-        // Create a JSON Web Token and sign it
-        const authToken = sign(payload, process.env.TOKEN_SECRET, {
-          algorithm: "HS256",
-          expiresIn: "6h",
-        });
-
-        // Send the token as the response
-        res.status(200).json({ authToken: authToken });
-      } else {
-        res.status(401).json({ message: "Unable to authenticate the user" });
-      }
+      foundUser = user;
+      return bcrypt.compare(password, user.password);
     })
-    .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
+    .then(passwordCorrect => {
+      if (!passwordCorrect) return Promise.reject({ status: 401, message: "Invalid credentials." });
+
+      const { _id, name } = foundUser;
+      const payload = { _id, name, email };
+
+      const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+        algorithm: "HS256",
+        expiresIn: "6h",
+      });
+
+      res.status(200).json({ authToken });
+    })
+    .catch(error => {
+      console.error("Error while logging in ->", error.message);
+      res.status(error.status || 500).json({ message: error.message || "Internal Server Error" });
+    });
 });
 
-// GET  /auth/verify  -  Used to verify JWT stored on the client
+// Verify Token
 router.get("/verify", isAuthenticated, (req, res, next) => {
-  // If JWT token is valid the payload gets decoded by the
-  // isAuthenticated middleware and is made available on `req.payload`
-  // console.log(`req.payload`, req.payload);
-
-  // Send back the token payload object containing the user data
+  console.log("req.payload ->", req.payload);
   res.status(200).json(req.payload);
 });
 
