@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Schema, model } from "mongoose";
 
 const projectSchema = new Schema({
@@ -11,9 +12,9 @@ const projectSchema = new Schema({
         required: true 
     },
     description: { type: String },
-    technologies: [String],
+    technologies: [{ type: String }],
     link: { type: String },
-    image: { type: String },
+    images: [{ type: String }],
   }, { timestamps: true });
 
   const Project = model("Project", projectSchema);
