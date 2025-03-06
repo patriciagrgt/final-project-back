@@ -9,8 +9,8 @@ router.post("/", (req, res, next) => {
     userId: req.body.userId,
     bio: req.body.bio,
     skills: req.body.skills,
-    experience: req.body.skills,
-    education: req.body.skills,
+    experience: req.body.experience,
+    education: req.body.education,
     location: req.body.location,
     socialLinks: req.body.socialLinks,
   })
