@@ -38,7 +38,7 @@ router.post("/signup", (req, res, next) => {
       return User.create({ email, password: hashedPassword, name });
     })
     .then(createdUser => {
-      res.status(201).json({ _id: createdUser._id, email: createdUser.email, name: createdUser.name });
+      res.status(201).json({ _id: createdUser._id, email: createdUser.email, name: createdUser.name, theme: createdUser.theme });
     })
     .catch(error => {
       console.error("Error while signing up ->", error.message);

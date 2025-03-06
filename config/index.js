@@ -24,7 +24,7 @@ export default (app) => {
   // controls a very specific header to pass headers from the frontend
   app.use(
     cors({
-      origin: [FRONTEND_URL],
+      origin: [FRONTEND_URL, "http://localhost:3000"],
     })
   );
 

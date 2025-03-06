@@ -8,6 +8,9 @@ router.post("/", (req, res, next) => {
   Profile.create({
     userId: req.body.userId,
     bio: req.body.bio,
+    skills: req.body.skills,
+    experience: req.body.skills,
+    education: req.body.skills,
     location: req.body.location,
     socialLinks: req.body.socialLinks,
   })

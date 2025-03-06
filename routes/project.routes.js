@@ -10,8 +10,8 @@ router.post("/", (req, res, next) => {
     title: req.body.title,
     description: req.body.description,
     technologies: req.body.technologies,
-    repositoryUrl: req.body.repositoryUrl,
-    liveDemoUrl: req.body.liveDemoUrl,
+    link: req.body.link,
+    images: req.body.images,
   })
     .then((createdProject) => {
       console.log("Project created ->", createdProject);
