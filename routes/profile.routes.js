@@ -35,44 +35,33 @@ router.get("/", (req, res, next) => {
 });
 
 // Get Profile by ID
-router.get("/:id", (req, res, next) => {
-  console.log(req.params)
-  Profile.findOne({userId:req.params.id})
-
+router.get("/:userId", (req, res, next) => {
+  Profile.findOne({ userId: req.params.userId })
     .then((profile) => {
       if (!profile) return res.status(404).json({ message: "Profile not found" });
       res.json(profile);
     })
-    .catch((error) => {
-      console.error("Error while fetching Profile ->", error.message);
-      next(error);
-    });
+    .catch((error) => next(error));
 });
 
 // Update Profile
-router.put("/:id", (req, res, next) => {
-  Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
+router.put("/:userId", (req, res, next) => {
+  Profile.findOneAndUpdate({ userId: req.params.userId }, req.body, { new: true })
     .then((updatedProfile) => {
       if (!updatedProfile) return res.status(404).json({ message: "Profile not found" });
       res.json(updatedProfile);
     })
-    .catch((error) => {
-      console.error("Error while updating Profile ->", error.message);
-      next(error);
-    });
+    .catch((error) => next(error));
 });
 
 // Delete Profile
-router.delete("/:id", (req, res, next) => {
-  Profile.findByIdAndDelete(req.params.id)
+router.delete("/:userId", (req, res, next) => {
+  Profile.findOneAndDelete({ userId: req.params.userId })
     .then((deletedProfile) => {
       if (!deletedProfile) return res.status(404).json({ message: "Profile not found" });
       res.json({ message: "Profile deleted successfully" });
     })
-    .catch((error) => {
-      console.error("Error while deleting Profile ->", error.message);
-      next(error);
-    });
+    .catch((error) => next(error));
 });
 
 export default router;

@@ -23,7 +23,7 @@ router.post("/", (req, res, next) => {
     });
 });
 
-// Get all Projects
+// Get all Projects 
 router.get("/", (req, res, next) => {
   Project.find()
     .then((projects) => res.json(projects))
@@ -33,43 +33,31 @@ router.get("/", (req, res, next) => {
     });
 });
 
-// Get Project by ID
-router.get("/:id", (req, res, next) => {
-  Project.findById(req.params.id)
-    .then((project) => {
-      if (!project) return res.status(404).json({ message: "Project not found" });
-      res.json(project);
-    })
-    .catch((error) => {
-      console.error("Error while fetching Project ->", error.message);
-      next(error);
-    });
+// Obtener todos los proyectos de un usuario
+router.get("/user/:userId", (req, res, next) => {
+  Project.find({ userId: req.params.userId })
+    .then((projects) => res.json(projects))
+    .catch((error) => next(error));
 });
 
-// Update Project
+// Actualizar un proyecto por su ID
 router.put("/:id", (req, res, next) => {
   Project.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((updatedProject) => {
       if (!updatedProject) return res.status(404).json({ message: "Project not found" });
       res.json(updatedProject);
     })
-    .catch((error) => {
-      console.error("Error while updating Project ->", error.message);
-      next(error);
-    });
+    .catch((error) => next(error));
 });
 
-// Delete Project
+// Eliminar un proyecto por su ID
 router.delete("/:id", (req, res, next) => {
   Project.findByIdAndDelete(req.params.id)
     .then((deletedProject) => {
       if (!deletedProject) return res.status(404).json({ message: "Project not found" });
       res.json({ message: "Project deleted successfully" });
     })
-    .catch((error) => {
-      console.error("Error while deleting Project ->", error.message);
-      next(error);
-    });
+    .catch((error) => next(error));
 });
 
 export default router;
