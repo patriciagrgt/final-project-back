@@ -36,7 +36,9 @@ router.get("/", (req, res, next) => {
 
 // Get Profile by ID
 router.get("/:id", (req, res, next) => {
-  Profile.findById(req.params.id)
+  console.log(req.params)
+  Profile.findOne({userId:req.params.id})
+
     .then((profile) => {
       if (!profile) return res.status(404).json({ message: "Profile not found" });
       res.json(profile);
