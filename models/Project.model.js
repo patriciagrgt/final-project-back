@@ -13,8 +13,8 @@ const projectSchema = new Schema({
     },
     description: { type: String },
     technologies: [{ type: String }],
-    link: { type: String },
-    images: [{ type: String }],
+    link: { type: String, match: /^https?:\/\// }, // para validar enlaces con http(s)
+    images: [{ type: String, match: /^https?:\/\// }],
 }, {
     timestamps: true,
     versionKey: false

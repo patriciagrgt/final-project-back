@@ -1,8 +1,10 @@
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
-import profileRoutes from "./profile.routes.js";
-import projectRoutes from "./project.routes.js";
+import InfoRoutes from "./info.routes.js";
+import CurriculumRoutes from "./curriculum.routes.js";
+import ProjectRoutes from "./project.routes.js";
+import ContactRoutes from "./contact.routes.js";
 
 const router = Router();
 
@@ -13,7 +15,9 @@ router.get("/", (req, res) => {
 // Todas las rutas están aquí
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
-router.use("/profiles", profileRoutes);
-router.use("/projects", projectRoutes);
+router.use("/info", InfoRoutes);
+router.use("/curriculum", CurriculumRoutes);
+router.use("/projects", ProjectRoutes);
+router.use("/contact", ContactRoutes);
 
 export default router;

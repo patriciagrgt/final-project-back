@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { Schema, model } from "mongoose";
 
-const profileSchema = new Schema({
+const curriculumSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -14,7 +14,14 @@ const profileSchema = new Schema({
       title: { type: String },
       company: { type: String },
       startDate: { type: Date },
-      endDate: { type: Date },
+      endDate: {
+        type: Date, validate: {
+          validator: function (value) {
+            return value >= this.startDate;
+          },
+          message: "End date must be after start date"
+        }
+      },
       description: { type: String },
     },
   ],
@@ -27,15 +34,11 @@ const profileSchema = new Schema({
     },
   ],
   location: { type: String },
-  socialLinks: [{
-    platform: String,
-    url: String
-  }],
 }, {
   timestamps: true,
   versionKey: false
 });
 
-const Profile = model("Profile", profileSchema);
+const Curriculum = model("Curriculum", curriculumSchema);
 
-export default Profile;
+export default Curriculum;
