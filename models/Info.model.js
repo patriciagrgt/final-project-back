@@ -8,7 +8,8 @@ const infoSchema = new Schema({
     required: true
   },
   info: { type: String, required: true },
-});
+}, { timestamps: true, versionKey: false }
+);
 
 const Info = model("Info", infoSchema);
 

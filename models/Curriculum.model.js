@@ -37,7 +37,8 @@ const curriculumSchema = new Schema({
 }, {
   timestamps: true,
   versionKey: false
-});
+}, { timestamps: true, versionKey: false }
+);
 
 const Curriculum = model("Curriculum", curriculumSchema);
 

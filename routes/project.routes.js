@@ -4,7 +4,7 @@ import { isAuthenticated } from "../middlewares/jwt.middleware.js";
 
 const router = express.Router();
 
-// Create Project
+// Create Project (Protected)
 router.post("/", isAuthenticated, (req, res, next) => {
   Project.create({
     userId: req.payload._id, // Se usa el ID del usuario autenticado
@@ -24,7 +24,7 @@ router.post("/", isAuthenticated, (req, res, next) => {
     });
 });
 
-// Obtener proyectos por userId
+// Get All Projects by User ID (Protected)
 router.get("/user/:userId", (req, res, next) => {
   Project.find({ userId: req.params.userId })
     .then(projects => res.json(projects))
@@ -34,9 +34,29 @@ router.get("/user/:userId", (req, res, next) => {
     });
 });
 
-// Actualizar proyecto por ID
+// Get Single Project (Protected)
+router.get("/:id", isAuthenticated, (req, res, next) => {
+  Project.findById(req.params.id)
+    .then(project => {
+      if (!project) return res.status(404).json({ message: "Project not found" });
+      res.json(project);
+    })
+    .catch(error => {
+      console.error("Error while fetching Project ->", error.message);
+      next(error);
+    });
+});
+
+// Update Project (Protected)
 router.put("/:id", isAuthenticated, (req, res, next) => {
-  Project.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  const { title, description, technologies, link, images } = req.body;
+  const userId = req.payload._id;
+
+  Project.findOneAndUpdate(
+    { _id: req.params.id, userId },
+    { title, description, technologies, link, images },
+    { new: true }
+  )
     .then(updatedProject => {
       if (!updatedProject) return res.status(404).json({ message: "Project not found" });
       res.json(updatedProject);
@@ -48,9 +68,11 @@ router.put("/:id", isAuthenticated, (req, res, next) => {
 });
 
 
-// Eliminar proyecto por ID
+// Delete Project (Protected)
 router.delete("/:id", isAuthenticated, (req, res, next) => {
-  Project.findByIdAndDelete(req.params.id)
+  const userId = req.payload._id;
+
+  Project.findOneAndDelete({ _id: req.params.id, userId })
     .then(deletedProject => {
       if (!deletedProject) return res.status(404).json({ message: "Project not found" });
       res.json({ message: "Project deleted successfully" });

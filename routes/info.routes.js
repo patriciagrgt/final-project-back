@@ -4,7 +4,7 @@ import { isAuthenticated } from "../middlewares/jwt.middleware.js";
 
 const router = express.Router();
 
-// Create Info
+// Create Info (Protected)
 router.post("/", isAuthenticated, (req, res, next) => {
   Info.create({
     userId: req.payload._id, // Se usa el ID del usuario autenticado
@@ -20,8 +20,8 @@ router.post("/", isAuthenticated, (req, res, next) => {
     });
 });
 
-// Get Info by ID
-router.get("/user/:userId", (req, res, next) => {
+// Get Info by User ID (Protected)
+router.get("/user/:userId", isAuthenticated, (req, res, next) => {
     Info.findOne({ userId: req.params.userId })
       .then(info => {
         if (!info) return res.status(404).json({ message: "Info not found" });
@@ -33,9 +33,16 @@ router.get("/user/:userId", (req, res, next) => {
       });
   });
   
-  // Actualizar info por userId
+  // Update Info (Protected)
   router.put("/:id", isAuthenticated, (req, res, next) => {
-    Info.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const { info } = req.body;
+    const userId = req.payload._id;
+  
+    Info.findOneAndUpdate(
+      { _id: req.params.id, userId },
+      { info },
+      { new: true }
+    )
       .then(updatedInfo => {
         if (!updatedInfo) return res.status(404).json({ message: "Info not found" });
         res.json(updatedInfo);
@@ -46,9 +53,11 @@ router.get("/user/:userId", (req, res, next) => {
       });
   });
   
-  // Eliminar info por userId
+  // Delete Info (Protected)
   router.delete("/:id", isAuthenticated, (req, res, next) => {
-    Info.findByIdAndDelete(req.params.id)
+    const userId = req.payload._id;
+  
+    Info.findOneAndDelete({ _id: req.params.id, userId })
       .then(deletedInfo => {
         if (!deletedInfo) return res.status(404).json({ message: "Info not found" });
         res.json({ message: "Info deleted successfully" });

@@ -4,7 +4,7 @@ import { isAuthenticated } from "../middlewares/jwt.middleware.js";
 
 const router = express.Router();
 
-// Create Curriculum
+// Create Curriculum (Protected)
 router.post("/", isAuthenticated, (req, res, next) => {
   Curriculum.create({
     userId: req.payload._id, // Se usa el ID del usuario autenticado
@@ -24,8 +24,8 @@ router.post("/", isAuthenticated, (req, res, next) => {
     });
 });
 
-// Get Curriculum by ID
-router.get("/user/:userId", (req, res, next) => {
+// Get Curriculum by User ID (Protected)
+router.get("/user/:userId", isAuthenticated, (req, res, next) => {
   Curriculum.findOne({ userId: req.params.userId })
     .then(curriculum => {
       if (!curriculum) return res.status(404).json({ message: "Curriculum not found" });
@@ -37,9 +37,16 @@ router.get("/user/:userId", (req, res, next) => {
     });
 });
 
-// Actualizar curriculum por userId
+// Update Curriculum (Protected)
 router.put("/:id", isAuthenticated, (req, res, next) => {
-  Curriculum.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  const { bio, skills, experience, education, location } = req.body;
+  const userId = req.payload._id;
+
+  Curriculum.findOneAndUpdate(
+    { _id: req.params.id, userId },
+    { bio, skills, experience, education, location },
+    { new: true }
+  )
     .then(updatedCurriculum => {
       if (!updatedCurriculum) return res.status(404).json({ message: "Curriculum not found" });
       res.json(updatedCurriculum);
@@ -50,9 +57,11 @@ router.put("/:id", isAuthenticated, (req, res, next) => {
     });
 });
 
-// Eliminar curriculum por userId
+// Delete Curriculum (Protected)
 router.delete("/:id", isAuthenticated, (req, res, next) => {
-  Curriculum.findByIdAndDelete(req.params.id)
+  const userId = req.payload._id;
+
+  Curriculum.findOneAndDelete({ _id: req.params.id, userId })
     .then(deletedCurriculum => {
       if (!deletedCurriculum) return res.status(404).json({ message: "Curriculum not found" });
       res.json({ message: "Curriculum deleted successfully" });
