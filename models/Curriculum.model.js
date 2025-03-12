@@ -34,9 +34,6 @@ const curriculumSchema = new Schema({
     },
   ],
   location: { type: String },
-}, {
-  timestamps: true,
-  versionKey: false
 }, { timestamps: true, versionKey: false }
 );
 

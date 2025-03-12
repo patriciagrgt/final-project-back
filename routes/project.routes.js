@@ -25,7 +25,7 @@ router.post("/", isAuthenticated, (req, res, next) => {
 });
 
 // Get All Projects by User ID (Protected)
-router.get("/user/:userId", (req, res, next) => {
+router.get("/user/:userId", isAuthenticated, (req, res, next) => {
   Project.find({ userId: req.params.userId })
     .then(projects => res.json(projects))
     .catch(error => {
@@ -46,6 +46,8 @@ router.get("/:id", isAuthenticated, (req, res, next) => {
       next(error);
     });
 });
+
+
 
 // Update Project (Protected)
 router.put("/:id", isAuthenticated, (req, res, next) => {
