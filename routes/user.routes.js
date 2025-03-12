@@ -40,6 +40,20 @@ router.put("/:id", isAuthenticated, (req, res, next) => {
     });
 });
 
+// Update only the "info" field of the user
+router.put("/:id/info", isAuthenticated, (req, res, next) => {
+  const { info } = req.body;
+  User.findByIdAndUpdate(req.params.id, { info }, { new: true })
+    .then(updatedUser => {
+      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+      res.json(updatedUser);
+    })
+    .catch(error => {
+      console.error("Error while updating User info ->", error.message);
+      next(error);
+    });
+});
+
 // Delete User (Protected)
 router.delete("/:id", isAuthenticated, (req, res, next) => {
   User.findByIdAndDelete(req.params.id)

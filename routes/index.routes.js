@@ -1,7 +1,6 @@
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
-import InfoRoutes from "./info.routes.js";
 import CurriculumRoutes from "./curriculum.routes.js";
 import ProjectRoutes from "./project.routes.js";
 import ContactRoutes from "./contact.routes.js";
@@ -15,7 +14,6 @@ router.get("/", (req, res) => {
 // Todas las rutas están aquí
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
-router.use("/info", InfoRoutes);
 router.use("/curriculum", CurriculumRoutes);
 router.use("/projects", ProjectRoutes);
 router.use("/contact", ContactRoutes);
