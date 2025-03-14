@@ -1,7 +1,7 @@
-# 🚀 Name-of-Project
+# 🚀 PatShare
 
 ## 📋 Descripción
-Este proyecto es una aplicación web full-stack desarrollada con React en el frontend y Express/Node.js en el backend, utilizando MongoDB Atlas como base de datos.
+Este proyecto es una aplicación web full-stack desarrollada con React en el frontend y Express/Node.js en el backend, utilizando MongoDB como base de datos.
 
 ## 🏗️ Estructura del Proyecto
 El proyecto está dividido en dos partes principales:
@@ -23,8 +23,6 @@ El proyecto está dividido en dos partes principales:
 - **🔐 JWT**: Autenticación basada en tokens
 - **🔒 bcryptjs**: Encriptación de contraseñas
 - **🔧 dotenv**: Gestión de variables de entorno
-
-
 
 ## ✨ Características
 - 🔐 Autenticación de usuarios con JWT
@@ -53,20 +51,21 @@ name-of-project/
     └── package.json       # Dependencias del backend
 ```
 
+## 👥 Contribución
+1. Haz un fork del proyecto
+2. Crea una rama para tu funcionalidad (`git checkout -b feature/amazing-feature`)
+3. Haz commit de tus cambios (`git commit -m 'Add some amazing feature'`)
+4. Haz push a la rama (`git push origin feature/amazing-feature`)
+5. Abre un Pull Request
 
-👤 Autora
+## 📄 Licencia
+[Especifica la licencia bajo la cual se distribuye este proyecto]
 
+## 👤 Autora
 Desarrollado con ❤️ por Patricia
 
-🔗 Enlaces
-
-🌐 Web en Producción (Netlify)
-
-[https://naturalhub.netlify.app/](https://patshare.netlify.app/dashboard/curriculum)
-
-📂 Repositorio Backend (Render)
-
-[https://proyect-2-backend.onrender.com/](https://final-proyect-back.onrender.com/)
-
+## 🔗 Enlaces
+- 🌐 **Web en Producción (Netlify)**: [https://naturalhub.netlify.app/](https://naturalhub.netlify.app/)
+- 📂 **Repositorio Backend (Render)**: [https://proyect-2-backend.onrender.com/](https://proyect-2-backend.onrender.com/)
 
 ¡Gracias por visitar PatShare!
