@@ -51,13 +51,6 @@ name-of-project/
     └── package.json       # Dependencias del backend
 ```
 
-## 👥 Contribución
-1. Haz un fork del proyecto
-2. Crea una rama para tu funcionalidad (`git checkout -b feature/amazing-feature`)
-3. Haz commit de tus cambios (`git commit -m 'Add some amazing feature'`)
-4. Haz push a la rama (`git push origin feature/amazing-feature`)
-5. Abre un Pull Request
-
 ## 📄 Licencia
 [Especifica la licencia bajo la cual se distribuye este proyecto]
 
