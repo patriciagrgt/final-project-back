@@ -21,8 +21,8 @@ const userSchema = new Schema(
       type: String,
       default: 'default'
     },
-    info: { type: String, required: true },
-    profession: { type: String, required: true },
+    info: { type: String},
+    profession: { type: String},
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
