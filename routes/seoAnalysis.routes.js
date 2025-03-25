@@ -7,6 +7,7 @@ import Curriculum from "../models/Curriculum.model.js";
 const router = express.Router();
 
 router.get("/seo-analysis", isAuthenticated, async (req, res) => {
+    
   try {
     const userId = req.payload._id;
 
@@ -29,13 +30,9 @@ router.get("/seo-analysis", isAuthenticated, async (req, res) => {
       - Nombre: ${name}
       - Profesión: ${profession || "No especificada"}
       - Información: ${info || "No proporcionada"}
-      - Ubicación: ${location || "No especificada"}
 
       **Currículum:** 
       - Biografía: ${bio || "No proporcionada"}
-      - Habilidades: ${skills?.join(", ") || "No especificadas"}
-      - Experiencia: ${experience?.map(exp => `${exp.title} en ${exp.company}`).join(", ") || "No especificada"}
-      - Educación: ${education?.map(edu => `${edu.degree} en ${edu.institution}`).join(", ") || "No especificada"}
 
       Responde con una lista de palabras clave y frases optimizadas que deberían agregarse para mejorar la visibilidad en buscadores.
     `;
