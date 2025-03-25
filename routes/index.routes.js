@@ -4,6 +4,7 @@ import authRoutes from "./auth.routes.js";
 import CurriculumRoutes from "./curriculum.routes.js";
 import ProjectRoutes from "./project.routes.js";
 import ContactRoutes from "./contact.routes.js";
+import seoAnalysisRoutes from "./seoAnalysis.routes.js";
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.use("/auth", authRoutes);
 router.use("/curriculum", CurriculumRoutes);
 router.use("/projects", ProjectRoutes);
 router.use("/contact", ContactRoutes);
+router.use("/seo", seoAnalysisRoutes);
 
 export default router;
