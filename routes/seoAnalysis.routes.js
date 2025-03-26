@@ -7,7 +7,7 @@ import Curriculum from "../models/Curriculum.model.js";
 const router = express.Router();
 
 router.get("/seo-analysis", isAuthenticated, async (req, res) => {
-    
+
   try {
     const userId = req.payload._id;
 
@@ -25,16 +25,37 @@ router.get("/seo-analysis", isAuthenticated, async (req, res) => {
 
     // Construir el mensaje para la IA
     const prompt = `
-      Analiza el siguiente perfil profesional y su currículum y sugiere mejoras SEO para hacerlo más visible en buscadores.
-      **Perfil:** 
+      Genera una lista estratégica de 15 palabras clave optimizadas para SEO profesional, considerando:
+
+      PERFIL PROFESIONAL:
       - Nombre: ${name}
       - Profesión: ${profession || "No especificada"}
-      - Información: ${info || "No proporcionada"}
+      - Información adicional: ${info || "No proporcionada"}
 
-      **Currículum:** 
-      - Biografía: ${bio || "No proporcionada"}
+      CURRÍCULUM:
+      - Biografía profesional: ${bio || "No proporcionada"}
 
-      Responde con una lista de palabras clave y frases optimizadas que deberían agregarse para mejorar la visibilidad en buscadores.
+      INSTRUCCIONES ESPECÍFICAS:
+      1. Selecciona palabras clave que:
+        - Sean relevantes para la industria de ${profession}
+        - Tengan alto volumen de búsqueda
+        - Representen habilidades y competencias
+        - Sean específicas pero no demasiado técnicas
+
+      2. Formato de salida:
+        - 10 palabras clave separadas por comas
+        - Prioriza términos en español e inglés
+        - Incluye variaciones profesionales
+
+      3. Categorías a considerar:
+        - Habilidades técnicas
+        - Certificaciones
+        - Metodologías
+        - Herramientas profesionales
+        - Soft skills relevantes
+
+      EJEMPLO DE FORMATO DE RESPUESTA:
+      "gestión de proyectos, project management, liderazgo, scrum, transformación digital, agile methodology, análisis de datos, innovación, strategic planning, team leadership"
     `;
 
     // Llamar a la API de Google Gemini
@@ -48,7 +69,11 @@ router.get("/seo-analysis", isAuthenticated, async (req, res) => {
       }
     );
 
-    const suggestions = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "No se generaron sugerencias";
+    // Verifica la respuesta de Gemini en la terminal
+    console.log("Contenido completo de Gemini:", JSON.stringify(response.data.candidates[0], null, 2));
+
+    // Asegura que accedes correctamente a las sugerencias
+    const suggestions = response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "No se generaron sugerencias";
 
     res.json({ suggestions });
 
