@@ -1,12 +1,13 @@
 import express from "express";
 import axios from "axios";
 import { isAuthenticated } from "../middlewares/jwt.middleware.js";
+import aiRequestLimiter from "../middlewares/rateLimit.middleware.js";
 import User from "../models/User.model.js";
 import Curriculum from "../models/Curriculum.model.js";
 
 const router = express.Router();
 
-router.get("/seo-analysis", isAuthenticated, async (req, res) => {
+router.get("/seo-analysis", isAuthenticated,  aiRequestLimiter, async (req, res) => {
 
   try {
     const userId = req.payload._id;

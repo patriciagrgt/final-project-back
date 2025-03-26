@@ -10,6 +10,11 @@ export const notFoundHandler = (app) => {
 export const errorHandler = (app) => {
     app.use((err, req, res, next) => {
         console.error("Error:", req.method, req.path, err);
+
+        if (err.status === 429) {
+            return res.status(429).json({ message: "Has alcanzado el límite de peticiones. Inténtalo más tarde." });
+        }
+
         res.status(500).json({ message: "Internal Server Error" });
     });
 };
