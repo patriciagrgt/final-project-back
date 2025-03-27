@@ -4,6 +4,7 @@ import Curriculum from "../models/Curriculum.model.js"
 import Project from "../models/Project.model.js"
 import Contact from "../models/Contact.model.js"
 import { isAuthenticated } from "../middlewares/jwt.middleware.js";
+import { validateUser } from "../middlewares/validateUser.js";
 
 const router = express.Router();
 
@@ -56,7 +57,7 @@ router.get("/:id/profile", isAuthenticated, async (req, res, next) => {
 
 
 // Update User (Protected)
-router.put("/:id", isAuthenticated, (req, res, next) => {
+router.put("/:id", isAuthenticated, validateUser, (req, res, next) => {
   User.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then(updatedUser => {
       if (!updatedUser) return res.status(404).json({ message: "User not found" });
@@ -69,7 +70,7 @@ router.put("/:id", isAuthenticated, (req, res, next) => {
 });
 
 // Update only the "info" field of the user
-router.put("/:id/info", isAuthenticated, (req, res, next) => {
+router.put("/:id/info", isAuthenticated, validateUser, (req, res, next) => {
   const { info } = req.body;
   User.findByIdAndUpdate(req.params.id, { info }, { new: true })
     .then(updatedUser => {

@@ -3,12 +3,13 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.model.js";
 import { isAuthenticated } from "../middlewares/jwt.middleware.js";
+import { validateUser } from "../middlewares/validateUser.js";
 
 const router = express.Router();
 const saltRounds = 10;
 
 // Signup (Create User)
-router.post("/signup", (req, res, next) => {
+router.post("/signup", validateUser, (req, res, next) => {
   const { email, password, name } = req.body;
 
   if (!email || !password || !name) {
