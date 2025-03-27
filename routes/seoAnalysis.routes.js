@@ -1,5 +1,6 @@
 import express from "express";
 import axios from "axios";
+import NodeCache from "node-cache"; // Nueva importación
 import { isAuthenticated } from "../middlewares/jwt.middleware.js";
 import aiRequestLimiter from "../middlewares/rateLimit.middleware.js";
 import validateAI from "../middlewares/validateAI.js";
@@ -8,9 +9,22 @@ import Curriculum from "../models/Curriculum.model.js";
 
 const router = express.Router();
 
+// Configuración de caché
+const seoCache = new NodeCache({ stdTTL: 3600 }); // Caché por 1 hora
+
 router.post("/seo-analysis", isAuthenticated, aiRequestLimiter, validateAI, async (req, res) => {
   try {
     const userId = req.payload._id;
+
+    // Crear una clave de caché única para este usuario
+    const cacheKey = `seo-analysis-${userId}`;
+
+    // Verificar si hay respuesta en caché
+    const cachedResponse = seoCache.get(cacheKey);
+    if (cachedResponse) {
+      console.log("Devolviendo respuesta en caché");
+      return res.json(cachedResponse);
+    }
 
     // Obtener información del usuario y su currículum
     const user = await User.findById(userId).select('name profession info');
@@ -72,7 +86,13 @@ router.post("/seo-analysis", isAuthenticated, aiRequestLimiter, validateAI, asyn
     // Asegura que accedes correctamente a las sugerencias
     const suggestions = response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "No se generaron sugerencias";
 
-    res.json({ suggestions });
+    // Crear objeto de respuesta para caché y envío
+    const responseToCache = { suggestions };
+
+    // Guardar en caché
+    seoCache.set(cacheKey, responseToCache);
+
+    res.json(responseToCache);
 
   } catch (error) {
     console.error("Error in SEO Analysis:", error);
