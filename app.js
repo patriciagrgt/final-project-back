@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import "./db/index.js"; // Conexión a la base de datos
 import express from "express";
 const app = express();

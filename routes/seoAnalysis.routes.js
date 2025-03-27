@@ -8,38 +8,33 @@ import Curriculum from "../models/Curriculum.model.js";
 
 const router = express.Router();
 
-router.get("/seo-analysis", isAuthenticated,  aiRequestLimiter, validateAI, async (req, res) => {
-
+router.post("/seo-analysis", isAuthenticated, aiRequestLimiter, validateAI, async (req, res) => {
   try {
     const userId = req.payload._id;
 
     // Obtener información del usuario y su currículum
-    const user = await User.findById(userId);
-    const curriculum = await Curriculum.findOne({ userId });
+    const user = await User.findById(userId).select('name profession info');
+    const curriculum = await Curriculum.findOne({ userId }).select('bio');
 
-    if (!user || !curriculum) {
-      return res.status(404).json({ message: "User or curriculum not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Extraer los datos necesarios
-    const { name, info, profession } = user;
-    const { bio } = curriculum;
-
-    // Construir el mensaje para la IA
+    // Construir el mensaje para la IA usando los datos recuperados
     const prompt = `
       Genera una lista estratégica de 15 palabras clave optimizadas para SEO profesional, considerando:
 
       PERFIL PROFESIONAL:
-      - Nombre: ${name}
-      - Profesión: ${profession || "No especificada"}
-      - Información adicional: ${info || "No proporcionada"}
+      - Nombre: ${user.name}
+      - Profesión: ${user.profession || "No especificada"}
+      - Información adicional: ${user.info || "No proporcionada"}
 
       CURRÍCULUM:
-      - Biografía profesional: ${bio || "No proporcionada"}
+      - Biografía profesional: ${curriculum?.bio || "No proporcionada"}
 
       INSTRUCCIONES ESPECÍFICAS:
       1. Selecciona palabras clave que:
-        - Sean relevantes para la industria de ${profession}
+        - Sean relevantes para la industria de ${user.profession}
         - Tengan alto volumen de búsqueda
         - Representen habilidades y competencias
         - Sean específicas pero no demasiado técnicas

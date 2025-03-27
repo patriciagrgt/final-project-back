@@ -2,16 +2,22 @@ import { body, validationResult } from "express-validator";
 
 const validateAI = [
   body("input")
-    .trim()
-    .notEmpty().withMessage("El contenido no puede estar vacío.")
-    .isLength({ min: 10 }).withMessage("El texto debe tener al menos 10 caracteres.")
-    .matches(/^[a-zA-Z0-9\s.,!?ÁÉÍÓÚáéíóúñÑ]+$/).withMessage("El contenido contiene caracteres no permitidos."),
+  .optional()
+  .trim()
+  .notEmpty().withMessage("El contenido no puede estar vacío.")
+  .isLength({ min: 10 }).withMessage("El texto debe tener al menos 10 caracteres.")
+  .matches(/^[a-zA-Z0-9\s.,!?ÁÉÍÓÚáéíóúñÑ]+$/).withMessage("El contenido contiene caracteres no permitidos."),
 
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+(req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  // Si no hay input, simplemente continúa
+  if (!req.body.input) {
+    return next();
+  }
 
     // Lista ampliada de palabras prohibidas
     const prohibitedWords = [
@@ -39,4 +45,5 @@ const validateAI = [
     next();
   },
 ];
+
 export default validateAI;
