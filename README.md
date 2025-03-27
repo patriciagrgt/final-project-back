@@ -1,4 +1,6 @@
-# 🚀 PatShare Backend
+![Logo de PatShare](assets/icon%2064%20x%2064.png)
+
+# PatShare Backend
 
 ## 📋 Descripción
 Este proyecto es la parte backend de una aplicación web full-stack desarrollada con Express/Node.js en el backend, utilizando MongoDB como base de datos y Google Gemini para funcionalidades de IA.
