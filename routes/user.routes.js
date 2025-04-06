@@ -32,8 +32,8 @@ router.get("/:id", isAuthenticated, (req, res, next) => {
 });
 
 
-//Get Profile User by ID (Protected)
-router.get("/:id/profile", isAuthenticated, async (req, res, next) => {
+//Get Profile User by ID (Public)
+router.get("/:id/profile", async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select("-password"); // Excluir password
 
@@ -69,7 +69,7 @@ router.put("/:id", isAuthenticated, validateUser, (req, res, next) => {
     });
 });
 
-// Update only the "info" field of the user
+// Update only the "info" field of the user (Protected)
 router.put("/:id/info", isAuthenticated, validateUser, (req, res, next) => {
   const { info } = req.body;
   User.findByIdAndUpdate(req.params.id, { info }, { new: true })
